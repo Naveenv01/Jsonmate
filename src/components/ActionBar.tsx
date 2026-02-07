@@ -7,6 +7,7 @@ import Check from 'lucide-react/dist/esm/icons/check';
 import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
 import Braces from 'lucide-react/dist/esm/icons/braces';
 import Columns2 from 'lucide-react/dist/esm/icons/columns-2';
+import Trash2 from 'lucide-react/dist/esm/icons/trash-2';
 
 interface ActionBarProps {
   onFormat: () => void;
@@ -18,6 +19,7 @@ interface ActionBarProps {
   stats: { keys: number; depth: number; size: string };
   copied: boolean;
   splitEnabled: boolean;
+  onClear: () => void;
 }
 
 interface ActionButtonProps {
@@ -47,6 +49,7 @@ const ActionBarComponent: React.FC<ActionBarProps> = ({
   stats,
   copied,
   splitEnabled,
+  onClear,
 }) => {
   const CopyIcon = copied ? Check : Copy;
   const copyLabel = copied ? 'Copied!' : 'Copy';
@@ -77,6 +80,8 @@ const ActionBarComponent: React.FC<ActionBarProps> = ({
           <Columns2 className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Split</span>
         </button>
+        <div className="w-px h-5 bg-border mx-1" />
+        <ActionButton icon={Trash2} label="Clear" onClick={onClear} />
         <div className="w-px h-5 bg-border mx-1" />
         <ActionButton icon={CopyIcon} label={copyLabel} onClick={onCopy} />
         <ActionButton icon={Download} label="Download" onClick={onDownload} />

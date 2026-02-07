@@ -12,12 +12,14 @@ interface MonacoJsonEditorProps {
     value: string;
     onChange: (value: string) => void;
     showHighlighting?: boolean;
+    onFocus?: () => void;
 }
 
 export const MonacoJsonEditor = forwardRef<MonacoJsonEditorRef, MonacoJsonEditorProps>(({
     value,
     onChange,
     showHighlighting = true,
+    onFocus,
 }, ref) => {
     const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
@@ -44,6 +46,13 @@ export const MonacoJsonEditor = forwardRef<MonacoJsonEditorRef, MonacoJsonEditor
 
     const handleEditorDidMount: OnMount = (editor, monaco) => {
         editorRef.current = editor;
+
+        // Subscribe to focus event
+        editor.onDidFocusEditorText(() => {
+            if (onFocus) {
+                onFocus();
+            }
+        });
 
         // Define custom theme matching glassmorphism dark design
         monaco.editor.defineTheme('glassy-dark', {

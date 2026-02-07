@@ -38,6 +38,7 @@ export const JsonFormatter: React.FC = () => {
   const [copied, setCopied] = React.useState(false);
   const primaryEditorRef = useRef<MonacoJsonEditorRef>(null);
   const splitEditorRef = useRef<MonacoJsonEditorRef>(null);
+  const [focusedEditor, setFocusedEditor] = React.useState<'primary' | 'split' | null>(null);
 
   // Web Worker hook
   const { validate, getStats, format } = useJsonWorker();
@@ -169,6 +170,14 @@ export const JsonFormatter: React.FC = () => {
     URL.revokeObjectURL(url);
   }, [activeTab]);
 
+  const handleClear = useCallback(() => {
+    if (focusedEditor === 'primary') {
+      updateActiveContent('');
+    } else if (focusedEditor === 'split') {
+      updateSplitContent('');
+    }
+  }, [focusedEditor, updateActiveContent, updateSplitContent]);
+
   const openCompare = useCallback(() => setShowCompare(true), []);
   const closeCompare = useCallback(() => setShowCompare(false), []);
 
@@ -179,6 +188,7 @@ export const JsonFormatter: React.FC = () => {
           ref={primaryEditorRef}
           value={activeTab.content}
           onChange={updateActiveContent}
+          onFocus={() => setFocusedEditor('primary')}
         />
       </Suspense>
     </div>
@@ -192,6 +202,7 @@ export const JsonFormatter: React.FC = () => {
             ref={splitEditorRef}
             value={activeTab.splitContent || ''}
             onChange={updateSplitContent}
+            onFocus={() => setFocusedEditor('split')}
           />
         </Suspense>
       </div>
@@ -222,6 +233,7 @@ export const JsonFormatter: React.FC = () => {
           stats={stats}
           copied={copied}
           splitEnabled={activeTab.splitEnabled || false}
+          onClear={handleClear}
         />
 
         <div className="flex-1 flex flex-col overflow-hidden relative">

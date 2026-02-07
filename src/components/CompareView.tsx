@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import X from 'lucide-react/dist/esm/icons/x';
 import ArrowLeftRight from 'lucide-react/dist/esm/icons/arrow-left-right';
+import Trash2 from 'lucide-react/dist/esm/icons/trash-2';
 import { JsonEditor } from './JsonEditor';
 import { compareJson, DiffResult, validateJson, formatJson } from '../utils/jsonUtils';
 
@@ -12,6 +13,7 @@ interface CompareViewProps {
 export const CompareView: React.FC<CompareViewProps> = ({ initialLeft = '', onClose }) => {
   const [leftJson, setLeftJson] = useState(initialLeft);
   const [rightJson, setRightJson] = useState('');
+  const [focusedSide, setFocusedSide] = useState<'left' | 'right' | null>(null);
 
   const diffs = useMemo(() => {
     if (!leftJson.trim() || !rightJson.trim()) return [];
@@ -25,6 +27,14 @@ export const CompareView: React.FC<CompareViewProps> = ({ initialLeft = '', onCl
     const temp = leftJson;
     setLeftJson(rightJson);
     setRightJson(temp);
+  };
+
+  const handleClear = () => {
+    if (focusedSide === 'left') {
+      setLeftJson('');
+    } else if (focusedSide === 'right') {
+      setRightJson('');
+    }
   };
 
   const handleFormat = (side: 'left' | 'right') => {
@@ -48,6 +58,15 @@ export const CompareView: React.FC<CompareViewProps> = ({ initialLeft = '', onCl
             >
               <ArrowLeftRight className="w-4 h-4" />
               Swap
+            </button>
+            <button
+              onClick={handleClear}
+              className="glass-button flex items-center gap-1.5 text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!focusedSide}
+              title={focusedSide ? `Clear ${focusedSide === 'left' ? 'Original' : 'Modified'} JSON` : 'Select an editor to clear'}
+            >
+              <Trash2 className="w-4 h-4" />
+              Clear
             </button>
             <button
               onClick={onClose}
@@ -79,6 +98,7 @@ export const CompareView: React.FC<CompareViewProps> = ({ initialLeft = '', onCl
             <JsonEditor
               value={leftJson}
               onChange={setLeftJson}
+              onFocus={() => setFocusedSide('left')}
               placeholder="Paste first JSON..."
             />
           </div>
@@ -102,6 +122,7 @@ export const CompareView: React.FC<CompareViewProps> = ({ initialLeft = '', onCl
             <JsonEditor
               value={rightJson}
               onChange={setRightJson}
+              onFocus={() => setFocusedSide('right')}
               placeholder="Paste second JSON..."
             />
           </div>

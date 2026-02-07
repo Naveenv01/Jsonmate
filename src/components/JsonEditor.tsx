@@ -7,6 +7,7 @@ interface JsonEditorProps {
   placeholder?: string;
   readOnly?: boolean;
   showHighlighting?: boolean;
+  onFocus?: () => void;
 }
 
 export const JsonEditor: React.FC<JsonEditorProps> = ({
@@ -15,6 +16,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   placeholder = 'Paste or type JSON here...',
   readOnly = false,
   showHighlighting = true,
+  onFocus,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
@@ -159,6 +161,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
           ref={textareaRef}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onFocus={onFocus}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           readOnly={readOnly}
