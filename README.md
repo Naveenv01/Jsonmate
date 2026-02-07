@@ -4,17 +4,15 @@
 
 ![JSON Formatter Preview](./public/image.png)
 
-## Highlights
+## Features
 
-*   **Glassmorphism Design:** A stunning macOS-inspired liquid glass UI with blur effects, smooth transitions, and a premium aesthetic.
-*   **Blazing Fast:** Optimized for speed with React.memo, useCallback, and a streamlined architecture. Loads instantly and handles large JSON files with ease.
-*   **Privacy Focused:** 100% client-side. Your data never leaves your browser. Works offline.
-*   **Powerful Editor:** Built on Monaco Editor (VS Code) for a familiar and robust editing experience.
-*   **Feature Rich:**
-    *   **JSON Validation:** Instant, precise error reporting with line numbers and suggestions.
-    *   **Tab System:** Manage multiple JSON files simultaneously with a Safari-style tab bar.
-    *   **Diff / Compare:** Visual side-by-side comparison of JSON structures.
-    *   **Local Storage Sync:** Your work is automatically saved and restored.
+- **Advanced JSON Formatting**: Automatic indentation, syntax highlighting, and error validation.
+- **Side-by-Side Comparison**: Visually compare two JSON structures with detailed diff highlighting.
+- **Split View Editor**: Dual-pane editing environment for multitasking with independent controls.
+- **Intelligent Tab System**: Manage multiple JSON contexts simultaneously with persistent state.
+- **Privacy-First Architecture**: All processing happens client-side; data never leaves the browser.
+- **Productivity Tools**: One-click copy, file download, minification, and format controls.
+- **Modern Interface**: Clean, dark-themed UI with glassmorphism design for optimal readability.
 
 ## Tech Stack
 
@@ -27,7 +25,10 @@
 
 ## Installation & Setup
 
-1.  **Clone the repository**![alt text](image.png)
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/Naveenv01/Jsonmate.git
+    ```
 
 2.  **Install dependencies**
     ```bash
