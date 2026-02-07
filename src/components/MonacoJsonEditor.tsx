@@ -86,127 +86,6 @@ export const MonacoJsonEditor = forwardRef<MonacoJsonEditorRef, MonacoJsonEditor
         // Apply the custom theme
         monaco.editor.setTheme('glassy-dark');
 
-        // Glassmorphism styles for context menu
-        const styleContent = `
-            /* Glassmorphism Context Menu Styles */
-            .monaco-menu-container {
-                background: transparent !important;
-                border: none !important;
-                box-shadow: none !important;
-            }
-            
-            .monaco-menu-container .monaco-scrollable-element {
-                background: rgba(17, 24, 39, 0.88) !important;
-                backdrop-filter: blur(20px) saturate(150%) !important;
-                -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
-                border: 1px solid rgba(99, 140, 230, 0.2) !important;
-                border-radius: 12px !important;
-                box-shadow: 
-                    0 8px 32px rgba(0, 0, 0, 0.4),
-                    0 0 0 1px rgba(255, 255, 255, 0.03) inset !important;
-                overflow: hidden !important;
-            }
-            
-            .monaco-menu-container .monaco-menu {
-                background: transparent !important;
-                padding: 4px !important;
-            }
-            
-            .monaco-menu-container .monaco-action-bar.vertical {
-                background: transparent !important;
-            }
-            
-            .monaco-menu-container .actions-container {
-                padding: 0 !important;
-            }
-            
-            .monaco-menu-container .action-item {
-                margin: 1px 0 !important;
-            }
-            
-            .monaco-menu-container .action-menu-item {
-                background: transparent !important;
-                border-radius: 6px !important;
-                padding: 6px 12px !important;
-                margin: 0 4px !important;
-                transition: all 0.12s ease-out !important;
-            }
-            
-            .monaco-menu-container .action-item:hover .action-menu-item,
-            .monaco-menu-container .action-item.focused .action-menu-item {
-                background: rgba(99, 140, 230, 0.15) !important;
-            }
-            
-            .monaco-menu-container .action-label {
-                color: rgba(229, 231, 235, 0.9) !important;
-                font-size: 13px !important;
-                font-weight: 450 !important;
-                letter-spacing: 0.01em !important;
-            }
-            
-            .monaco-menu-container .action-item:hover .action-label,
-            .monaco-menu-container .action-item.focused .action-label {
-                color: rgba(165, 199, 255, 1) !important;
-            }
-            
-            .monaco-menu-container .keybinding {
-                color: rgba(148, 163, 184, 0.5) !important;
-                font-size: 11px !important;
-                font-weight: 400 !important;
-                opacity: 0.7 !important;
-            }
-            
-            .monaco-menu-container .action-item:hover .keybinding,
-            .monaco-menu-container .action-item.focused .keybinding {
-                color: rgba(165, 199, 255, 0.6) !important;
-                opacity: 1 !important;
-            }
-            
-            .monaco-menu-container .action-item .action-label.separator {
-                background: rgba(99, 140, 230, 0.12) !important;
-                height: 1px !important;
-                margin: 4px 12px !important;
-                padding: 0 !important;
-                border: none !important;
-            }
-        `;
-        const styleId = 'monaco-glassy-context-menu';
-
-        // Inject glassmorphism styles into document and all shadow roots
-        const injectContextMenuStyles = () => {
-            // Inject into document head if not already present
-            if (!document.getElementById(styleId)) {
-                const style = document.createElement('style');
-                style.id = styleId;
-                style.textContent = styleContent;
-                document.head.appendChild(style);
-            }
-
-            // Inject into all shadow roots by iterating all elements
-            const allElements = document.querySelectorAll('*');
-            allElements.forEach(el => {
-                const shadowHost = el as HTMLElement;
-                if (shadowHost.shadowRoot && !shadowHost.shadowRoot.getElementById(styleId)) {
-                    const shadowStyle = document.createElement('style');
-                    shadowStyle.id = styleId;
-                    shadowStyle.textContent = styleContent;
-                    shadowHost.shadowRoot.appendChild(shadowStyle);
-                }
-            });
-        };
-
-        // Inject styles immediately
-        injectContextMenuStyles();
-
-        // Inject on mousedown to ensure styles are in shadow roots before menu appears
-        const handleMouseDown = () => {
-            requestAnimationFrame(() => {
-                injectContextMenuStyles();
-            });
-        };
-        document.addEventListener('mousedown', handleMouseDown);
-        document.addEventListener('contextmenu', handleMouseDown);
-
         // Enable folding
         editor.updateOptions({
             folding: true,
@@ -271,6 +150,7 @@ export const MonacoJsonEditor = forwardRef<MonacoJsonEditorRef, MonacoJsonEditor
                             horizontalHasArrows: false,
                         },
                         glyphMargin: false,
+                        contextmenu: false,
                     }}
                 />
             </div>
