@@ -45,6 +45,16 @@ export const CompareView: React.FC<CompareViewProps> = ({ initialLeft = '', onCl
     }
   };
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in">
       <div className="glass-panel w-full max-w-6xl h-[80vh] rounded-2xl shadow-glass-lg flex flex-col overflow-hidden">

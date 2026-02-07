@@ -24,7 +24,7 @@ const generateId = () => Math.random().toString(36).substring(2, 9);
 
 const defaultTab: Tab = {
   id: generateId(),
-  name: 'Untitled',
+  name: 'Tab 1',
   content: '',
   splitEnabled: false,
   splitContent: '',
@@ -239,11 +239,11 @@ export const JsonFormatter: React.FC = () => {
         <div className="flex-1 flex flex-col overflow-hidden relative">
           <div className="flex-1 mx-4 mt-4 mb-4 flex flex-col overflow-hidden">
             {activeTab.splitEnabled ? (
-              <ResizablePanelGroup direction="horizontal" className="flex-1 h-full gap-2">
+              <ResizablePanelGroup direction="horizontal" className="flex-1 h-full gap-1">
                 <ResizablePanel defaultSize={50} minSize={25}>
                   {primaryEditor}
                 </ResizablePanel>
-                <ResizableHandle withHandle className="bg-transparent hover:bg-primary/20 transition-colors mx-1 w-1 rounded-full" />
+                <ResizableHandle withHandle className="bg-transparent hover:bg-primary/20 transition-colors w-1 rounded-full" />
                 <ResizablePanel defaultSize={50} minSize={25}>
                   {splitEditor}
                 </ResizablePanel>
