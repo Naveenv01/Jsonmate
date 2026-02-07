@@ -5,6 +5,8 @@ export interface Tab {
   id: string;
   name: string;
   content: string;
+  splitEnabled?: boolean;
+  splitContent?: string;
 }
 
 interface TabBarProps {
@@ -47,8 +49,8 @@ export const TabBar: React.FC<TabBarProps> = ({
           <div
             key={tab.id}
             className={`group relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-200 cursor-pointer shrink-0 ${activeTabId === tab.id
-                ? 'bg-white/[0.12] text-white shadow-[0_1px_3px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.1)]'
-                : 'text-white/50 hover:text-white/80 hover:bg-white/[0.06]'
+              ? 'bg-white/[0.12] text-white shadow-[0_1px_3px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.1)]'
+              : 'text-white/50 hover:text-white/80 hover:bg-white/[0.06]'
               }`}
             onClick={() => onTabSelect(tab.id)}
           >

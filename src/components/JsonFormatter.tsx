@@ -1,8 +1,9 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { TabBar, Tab } from './TabBar';
 import { ActionBar } from './ActionBar';
 import { MonacoJsonEditor, MonacoJsonEditorRef } from './MonacoJsonEditor';
 import { CompareView } from './CompareView';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from './ui/resizable';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { validateJson, getJsonStats } from '../utils/jsonUtils';
 import { AlertCircle } from 'lucide-react';
@@ -13,14 +14,18 @@ const defaultTab: Tab = {
   id: generateId(),
   name: 'Untitled',
   content: '',
+  splitEnabled: false,
+  splitContent: '',
 };
 
 export const JsonFormatter: React.FC = () => {
   const [tabs, setTabs] = useLocalStorage<Tab[]>('json-formatter-tabs', [defaultTab]);
   const [activeTabId, setActiveTabId] = useLocalStorage('json-formatter-active-tab', defaultTab.id);
-  const [showCompare, setShowCompare] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const editorRef = useRef<MonacoJsonEditorRef>(null);
+  const [showCompare, setShowCompare] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
+  const primaryEditorRef = useRef<MonacoJsonEditorRef>(null);
+  const splitEditorRef = useRef<MonacoJsonEditorRef>(null);
+
   // Enforce dark mode permanently
   useEffect(() => {
     document.documentElement.classList.add('dark');
@@ -34,14 +39,41 @@ export const JsonFormatter: React.FC = () => {
   const validation = useMemo(() => validateJson(activeTab.content), [activeTab.content]);
   const stats = useMemo(() => getJsonStats(activeTab.content), [activeTab.content]);
 
+  // Memoized update functions for performance
   const updateActiveContent = useCallback((content: string) => {
     setTabs(prev => prev.map(tab =>
       tab.id === activeTabId ? { ...tab, content } : tab
     ));
   }, [activeTabId, setTabs]);
 
+  const updateSplitContent = useCallback((splitContent: string) => {
+    setTabs(prev => prev.map(tab =>
+      tab.id === activeTabId ? { ...tab, splitContent } : tab
+    ));
+  }, [activeTabId, setTabs]);
+
+  // Toggle split view - clears content when closing
+  const handleSplitToggle = useCallback(() => {
+    setTabs(prev => prev.map(tab => {
+      if (tab.id !== activeTabId) return tab;
+      // If closing split, clear the content
+      if (tab.splitEnabled) {
+        return { ...tab, splitEnabled: false, splitContent: '' };
+      }
+      // If opening split, just enable it (content stays empty)
+      return { ...tab, splitEnabled: true };
+    }));
+  }, [activeTabId, setTabs]);
+
   const handleTabAdd = useCallback(() => {
-    const newTab: Tab = { id: generateId(), name: `Tab ${tabs.length + 1}`, content: '' };
+    // New tabs have split view disabled by default
+    const newTab: Tab = {
+      id: generateId(),
+      name: `Tab ${tabs.length + 1}`,
+      content: '',
+      splitEnabled: false,
+      splitContent: '',
+    };
     setTabs(prev => [...prev, newTab]);
     setActiveTabId(newTab.id);
   }, [tabs.length, setTabs, setActiveTabId]);
@@ -62,7 +94,7 @@ export const JsonFormatter: React.FC = () => {
     setTabs(prev => prev.map(tab => tab.id === id ? { ...tab, name } : tab));
   }, [setTabs]);
 
-  const handleFormat = useCallback(() => editorRef.current?.format(), []);
+  const handleFormat = useCallback(() => primaryEditorRef.current?.format(), []);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -85,6 +117,29 @@ export const JsonFormatter: React.FC = () => {
   const openCompare = useCallback(() => setShowCompare(true), []);
   const closeCompare = useCallback(() => setShowCompare(false), []);
 
+  // Memoized editor panel for performance
+  const primaryEditor = useMemo(() => (
+    <div className="glass-panel rounded-xl overflow-hidden shadow-glass flex flex-col flex-1 h-full">
+      <MonacoJsonEditor
+        ref={primaryEditorRef}
+        value={activeTab.content}
+        onChange={updateActiveContent}
+      />
+    </div>
+  ), [activeTab.content, updateActiveContent]);
+
+  const splitEditor = useMemo(() => (
+    activeTab.splitEnabled ? (
+      <div className="glass-panel rounded-xl overflow-hidden shadow-glass flex flex-col flex-1 h-full">
+        <MonacoJsonEditor
+          ref={splitEditorRef}
+          value={activeTab.splitContent || ''}
+          onChange={updateSplitContent}
+        />
+      </div>
+    ) : null
+  ), [activeTab.splitEnabled, activeTab.splitContent, updateSplitContent]);
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <header className="glass-panel border-b border-border/50">
@@ -104,20 +159,28 @@ export const JsonFormatter: React.FC = () => {
           onCopy={handleCopy}
           onDownload={handleDownload}
           onCompare={openCompare}
+          onSplitToggle={handleSplitToggle}
           isValid={validation.valid}
           stats={stats}
           copied={copied}
+          splitEnabled={activeTab.splitEnabled || false}
         />
 
         <div className="flex-1 flex flex-col overflow-hidden relative">
-          <div className="flex-1 mx-4 mt-4 mb-4 flex overflow-hidden">
-            <div className="glass-panel rounded-xl overflow-hidden shadow-glass flex flex-col flex-1">
-              <MonacoJsonEditor
-                ref={editorRef}
-                value={activeTab.content}
-                onChange={updateActiveContent}
-              />
-            </div>
+          <div className="flex-1 mx-4 mt-4 mb-4 flex flex-col overflow-hidden">
+            {activeTab.splitEnabled ? (
+              <ResizablePanelGroup direction="horizontal" className="flex-1 h-full gap-2">
+                <ResizablePanel defaultSize={50} minSize={25}>
+                  {primaryEditor}
+                </ResizablePanel>
+                <ResizableHandle withHandle className="bg-transparent hover:bg-primary/20 transition-colors mx-1 w-1 rounded-full" />
+                <ResizablePanel defaultSize={50} minSize={25}>
+                  {splitEditor}
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            ) : (
+              primaryEditor
+            )}
           </div>
 
           {!validation.valid && validation.error && (

@@ -7,6 +7,7 @@ import {
   Check,
   AlertCircle,
   Braces,
+  Columns2,
 } from 'lucide-react';
 
 interface ActionBarProps {
@@ -14,9 +15,11 @@ interface ActionBarProps {
   onCopy: () => void;
   onDownload: () => void;
   onCompare: () => void;
+  onSplitToggle: () => void;
   isValid: boolean;
   stats: { keys: number; depth: number; size: string };
   copied: boolean;
+  splitEnabled: boolean;
 }
 
 interface ActionButtonProps {
@@ -41,9 +44,11 @@ const ActionBarComponent: React.FC<ActionBarProps> = ({
   onCopy,
   onDownload,
   onCompare,
+  onSplitToggle,
   isValid,
   stats,
   copied,
+  splitEnabled,
 }) => {
   const CopyIcon = copied ? Check : Copy;
   const copyLabel = copied ? 'Copied!' : 'Copy';
@@ -62,6 +67,18 @@ const ActionBarComponent: React.FC<ActionBarProps> = ({
         <ActionButton icon={Wand2} label="Format" onClick={onFormat} />
         <div className="w-px h-5 bg-border mx-1" />
         <ActionButton icon={GitCompare} label="Compare" onClick={onCompare} />
+        <div className="w-px h-5 bg-border mx-1" />
+        <button
+          onClick={onSplitToggle}
+          className={`glass-button flex items-center gap-1.5 transition-colors ${splitEnabled
+              ? 'text-primary bg-primary/10'
+              : 'text-muted-foreground hover:text-foreground'
+            }`}
+          title={splitEnabled ? 'Close Split View' : 'Open Split View'}
+        >
+          <Columns2 className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Split</span>
+        </button>
         <div className="w-px h-5 bg-border mx-1" />
         <ActionButton icon={CopyIcon} label={copyLabel} onClick={onCopy} />
         <ActionButton icon={Download} label="Download" onClick={onDownload} />

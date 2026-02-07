@@ -51,7 +51,7 @@ function detectJsonError(input: string, error: SyntaxError): Pick<JsonError, 'li
   let suggestion: string | undefined;
   
   // 1. UNTERMINATED STRING - Check for odd quotes
-  if (errorMsg.includes('unterminated') || errorMsg.includes('unexpected end of json')) {
+  if (errorMsg.includes('unterminated') || errorMsg.includes('unexpected end of json') || errorMsg.includes('bad control character')) {
     for (let i = 0; i < lines.length; i++) {
       const quoteCount = countUnescapedQuotes(lines[i]);
       if (quoteCount % 2 !== 0) {

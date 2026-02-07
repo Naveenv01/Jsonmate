@@ -221,62 +221,59 @@ export const MonacoJsonEditor = forwardRef<MonacoJsonEditorRef, MonacoJsonEditor
     };
 
     return (
-        <div className="flex-1 overflow-hidden">
-            <Editor
-                height="100%"
-                defaultLanguage="json"
-                value={value}
-                onChange={handleChange}
-                onMount={handleEditorDidMount}
-                options={{
-                    // Completely disable minimap
-                    minimap: {
-                        enabled: false,
-                        renderCharacters: false,
-                    },
-                    stickyScroll: {
-                        enabled: false,
-                    },
-                    fontSize: 14,
-                    fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
-                    lineNumbers: 'on',
-                    scrollBeyondLastLine: false,
-                    wordWrap: 'off',
-                    formatOnPaste: true,
-                    formatOnType: false,
-                    automaticLayout: true,
-                    padding: { top: 12, bottom: 12 },
-                    smoothScrolling: true,
-                    cursorSmoothCaretAnimation: 'on',
-                    renderLineHighlight: 'line',
-                    renderWhitespace: 'selection',
-                    bracketPairColorization: {
-                        enabled: true,
-                    },
-                    // Code folding options
-                    folding: true,
-                    foldingStrategy: 'indentation',
-                    showFoldingControls: 'always',
-                    foldingHighlight: true,
-                    // Completely hide overview ruler and decorations
-                    overviewRulerLanes: 0,
-                    hideCursorInOverviewRuler: true,
-                    overviewRulerBorder: false,
-                    // Hide decorations overview ruler (the thin bar on the right)
-                    scrollbar: {
-                        vertical: 'auto',
-                        horizontal: 'auto',
-                        verticalScrollbarSize: 8,
-                        horizontalScrollbarSize: 8,
-                        useShadows: false,
-                        verticalHasArrows: false,
-                        horizontalHasArrows: false,
-                    },
-                    // Hide the glyph margin decorations
-                    glyphMargin: false,
-                }}
-                theme="glassy-dark"
-            />
+        <div className="relative flex-1 min-h-0 w-full h-full overflow-hidden">
+            <div className="absolute top-1 bottom-0 left-0 right-0">
+                <Editor
+                    height="100%"
+                    defaultLanguage="json"
+                    value={value}
+                    theme="glassy-dark"
+                    onChange={handleChange}
+                    onMount={handleEditorDidMount}
+                    options={{
+                        minimap: {
+                            enabled: false,
+                            renderCharacters: false,
+                        },
+                        stickyScroll: {
+                            enabled: false,
+                        },
+                        fontSize: 14,
+                        fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
+                        lineNumbers: 'on',
+                        scrollBeyondLastLine: false,
+                        wordWrap: 'off',
+                        formatOnPaste: true,
+                        formatOnType: false,
+                        automaticLayout: true,
+                        padding: { top: 12, bottom: 12 },
+                        smoothScrolling: true,
+                        cursorSmoothCaretAnimation: 'on',
+                        renderLineHighlight: 'line',
+                        renderWhitespace: 'selection',
+                        bracketPairColorization: {
+                            enabled: true,
+                        },
+                        folding: true,
+                        foldingStrategy: 'indentation',
+                        showFoldingControls: 'always',
+                        foldingHighlight: true,
+                        overviewRulerLanes: 0,
+                        hideCursorInOverviewRuler: true,
+                        overviewRulerBorder: false,
+                        scrollbar: {
+                            vertical: 'auto',
+                            horizontal: 'auto',
+                            verticalScrollbarSize: 8,
+                            horizontalScrollbarSize: 8,
+                            useShadows: false,
+                            verticalHasArrows: false,
+                            horizontalHasArrows: false,
+                        },
+                        glyphMargin: false,
+                    }}
+                />
+            </div>
         </div>
     );
 });
