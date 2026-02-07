@@ -94,7 +94,12 @@ export const JsonFormatter: React.FC = () => {
     setTabs(prev => prev.map(tab => tab.id === id ? { ...tab, name } : tab));
   }, [setTabs]);
 
-  const handleFormat = useCallback(() => primaryEditorRef.current?.format(), []);
+  const handleFormat = useCallback(() => {
+    primaryEditorRef.current?.format();
+    if (activeTab.splitEnabled) {
+      splitEditorRef.current?.format();
+    }
+  }, [activeTab.splitEnabled]);
 
   const handleCopy = useCallback(async () => {
     try {
