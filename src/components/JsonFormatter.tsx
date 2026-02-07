@@ -1,12 +1,24 @@
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useCallback, useMemo, useRef, useEffect, Suspense } from 'react';
 import { TabBar, Tab } from './TabBar';
 import { ActionBar } from './ActionBar';
-import { MonacoJsonEditor, MonacoJsonEditorRef } from './MonacoJsonEditor';
-import { CompareView } from './CompareView';
+// import { MonacoJsonEditor, MonacoJsonEditorRef } from './MonacoJsonEditor'; // Replaced with lazy
+// import { CompareView } from './CompareView'; // Replaced with lazy
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from './ui/resizable';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { validateJson, getJsonStats } from '../utils/jsonUtils';
-import { AlertCircle } from 'lucide-react';
+import { validateJson, getJsonStats, ValidationResult } from '../utils/jsonUtils';
+import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
+import Loader2 from 'lucide-react/dist/esm/icons/loader-2';
+import { useJsonWorker } from '../hooks/useJsonWorker';
+import type { MonacoJsonEditorRef } from './MonacoJsonEditor'; // Type only
+
+const MonacoJsonEditor = React.lazy(() => import('./MonacoJsonEditor').then(module => ({ default: module.MonacoJsonEditor })));
+const CompareView = React.lazy(() => import('./CompareView').then(module => ({ default: module.CompareView })));
+
+const EditorLoadingSkeleton = () => (
+  <div className="w-full h-full flex items-center justify-center bg-transparent">
+    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground/50" />
+  </div>
+);
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
@@ -19,6 +31,7 @@ const defaultTab: Tab = {
 };
 
 export const JsonFormatter: React.FC = () => {
+  // ... (state hooks remain same)
   const [tabs, setTabs] = useLocalStorage<Tab[]>('json-formatter-tabs', [defaultTab]);
   const [activeTabId, setActiveTabId] = useLocalStorage('json-formatter-active-tab', defaultTab.id);
   const [showCompare, setShowCompare] = React.useState(false);
@@ -26,7 +39,14 @@ export const JsonFormatter: React.FC = () => {
   const primaryEditorRef = useRef<MonacoJsonEditorRef>(null);
   const splitEditorRef = useRef<MonacoJsonEditorRef>(null);
 
-  // Enforce dark mode permanently
+  // Web Worker hook
+  const { validate, getStats, format } = useJsonWorker();
+
+  // Async state for validation and stats
+  const [validation, setValidation] = React.useState<ValidationResult>({ valid: true, parsed: null });
+  const [stats, setStats] = React.useState({ keys: 0, depth: 0, size: '0 B' });
+
+  // ... (useEffect for dark mode, activeTab memo, debounce useEffect remain same)
   useEffect(() => {
     document.documentElement.classList.add('dark');
   }, []);
@@ -36,10 +56,40 @@ export const JsonFormatter: React.FC = () => {
     [tabs, activeTabId]
   );
 
-  const validation = useMemo(() => validateJson(activeTab.content), [activeTab.content]);
-  const stats = useMemo(() => getJsonStats(activeTab.content), [activeTab.content]);
+  // Debounced processing of validation and stats
+  useEffect(() => {
+    let isMounted = true;
+    const timer = setTimeout(async () => {
+      if (!activeTab.content.trim()) {
+        if (isMounted) {
+          setValidation({ valid: true, parsed: null });
+          setStats({ keys: 0, depth: 0, size: '0 B' });
+        }
+        return;
+      }
 
-  // Memoized update functions for performance
+      try {
+        const [validResult, statsResult] = await Promise.all([
+          validate(activeTab.content),
+          getStats(activeTab.content)
+        ]);
+
+        if (isMounted) {
+          setValidation(validResult);
+          setStats(statsResult);
+        }
+      } catch (e) {
+        console.error('Worker processing error:', e);
+      }
+    }, 300); // 300ms debounce
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [activeTab.content, validate, getStats]);
+
+  // ... (update functions remain same)
   const updateActiveContent = useCallback((content: string) => {
     setTabs(prev => prev.map(tab =>
       tab.id === activeTabId ? { ...tab, content } : tab
@@ -52,21 +102,17 @@ export const JsonFormatter: React.FC = () => {
     ));
   }, [activeTabId, setTabs]);
 
-  // Toggle split view - clears content when closing
   const handleSplitToggle = useCallback(() => {
     setTabs(prev => prev.map(tab => {
       if (tab.id !== activeTabId) return tab;
-      // If closing split, clear the content
       if (tab.splitEnabled) {
         return { ...tab, splitEnabled: false, splitContent: '' };
       }
-      // If opening split, just enable it (content stays empty)
       return { ...tab, splitEnabled: true };
     }));
   }, [activeTabId, setTabs]);
 
   const handleTabAdd = useCallback(() => {
-    // New tabs have split view disabled by default
     const newTab: Tab = {
       id: generateId(),
       name: `Tab ${tabs.length + 1}`,
@@ -94,12 +140,16 @@ export const JsonFormatter: React.FC = () => {
     setTabs(prev => prev.map(tab => tab.id === id ? { ...tab, name } : tab));
   }, [setTabs]);
 
-  const handleFormat = useCallback(() => {
-    primaryEditorRef.current?.format();
-    if (activeTab.splitEnabled) {
-      splitEditorRef.current?.format();
+  const handleFormat = useCallback(async () => {
+    if (activeTab.content) {
+      const formatted = await format(activeTab.content);
+      updateActiveContent(formatted);
     }
-  }, [activeTab.splitEnabled]);
+    if (activeTab.splitEnabled && activeTab.splitContent) {
+      const formattedSplit = await format(activeTab.splitContent);
+      updateSplitContent(formattedSplit);
+    }
+  }, [activeTab.content, activeTab.splitEnabled, activeTab.splitContent, format, updateActiveContent, updateSplitContent]);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -122,25 +172,28 @@ export const JsonFormatter: React.FC = () => {
   const openCompare = useCallback(() => setShowCompare(true), []);
   const closeCompare = useCallback(() => setShowCompare(false), []);
 
-  // Memoized editor panel for performance
   const primaryEditor = useMemo(() => (
     <div className="glass-panel rounded-xl overflow-hidden shadow-glass flex flex-col flex-1 h-full">
-      <MonacoJsonEditor
-        ref={primaryEditorRef}
-        value={activeTab.content}
-        onChange={updateActiveContent}
-      />
+      <Suspense fallback={<EditorLoadingSkeleton />}>
+        <MonacoJsonEditor
+          ref={primaryEditorRef}
+          value={activeTab.content}
+          onChange={updateActiveContent}
+        />
+      </Suspense>
     </div>
   ), [activeTab.content, updateActiveContent]);
 
   const splitEditor = useMemo(() => (
     activeTab.splitEnabled ? (
       <div className="glass-panel rounded-xl overflow-hidden shadow-glass flex flex-col flex-1 h-full">
-        <MonacoJsonEditor
-          ref={splitEditorRef}
-          value={activeTab.splitContent || ''}
-          onChange={updateSplitContent}
-        />
+        <Suspense fallback={<EditorLoadingSkeleton />}>
+          <MonacoJsonEditor
+            ref={splitEditorRef}
+            value={activeTab.splitContent || ''}
+            onChange={updateSplitContent}
+          />
+        </Suspense>
       </div>
     ) : null
   ), [activeTab.splitEnabled, activeTab.splitContent, updateSplitContent]);
@@ -221,10 +274,12 @@ export const JsonFormatter: React.FC = () => {
       </main>
 
       {showCompare && (
-        <CompareView
-          initialLeft={activeTab.content}
-          onClose={closeCompare}
-        />
+        <Suspense fallback={<div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>}>
+          <CompareView
+            initialLeft={activeTab.content}
+            onClose={closeCompare}
+          />
+        </Suspense>
       )}
     </div>
   );

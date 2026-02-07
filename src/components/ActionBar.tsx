@@ -1,14 +1,12 @@
 import React from 'react';
-import {
-  Wand2,
-  Copy,
-  Download,
-  GitCompare,
-  Check,
-  AlertCircle,
-  Braces,
-  Columns2,
-} from 'lucide-react';
+import Wand2 from 'lucide-react/dist/esm/icons/wand-2';
+import Copy from 'lucide-react/dist/esm/icons/copy';
+import Download from 'lucide-react/dist/esm/icons/download';
+import GitCompare from 'lucide-react/dist/esm/icons/git-compare';
+import Check from 'lucide-react/dist/esm/icons/check';
+import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
+import Braces from 'lucide-react/dist/esm/icons/braces';
+import Columns2 from 'lucide-react/dist/esm/icons/columns-2';
 
 interface ActionBarProps {
   onFormat: () => void;
@@ -71,8 +69,8 @@ const ActionBarComponent: React.FC<ActionBarProps> = ({
         <button
           onClick={onSplitToggle}
           className={`glass-button flex items-center gap-1.5 transition-colors ${splitEnabled
-              ? 'text-primary bg-primary/10'
-              : 'text-muted-foreground hover:text-foreground'
+            ? 'text-primary bg-primary/10'
+            : 'text-muted-foreground hover:text-foreground'
             }`}
           title={splitEnabled ? 'Close Split View' : 'Open Split View'}
         >

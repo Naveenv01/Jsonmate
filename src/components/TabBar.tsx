@@ -1,5 +1,6 @@
 import React from 'react';
-import { Plus, X } from 'lucide-react';
+import Plus from 'lucide-react/dist/esm/icons/plus';
+import X from 'lucide-react/dist/esm/icons/x';
 
 export interface Tab {
   id: string;
