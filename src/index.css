@@ -1,0 +1,399 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* JSON Formatter - macOS Liquid Glass Design System */
+
+@layer base {
+  :root {
+    --background: 220 20% 97%;
+    --foreground: 220 25% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 25% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 25% 10%;
+
+    --primary: 215 90% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 220 25% 20%;
+
+    --muted: 220 15% 95%;
+    --muted-foreground: 220 10% 50%;
+
+    --accent: 215 90% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 88%;
+    --input: 220 15% 92%;
+    --ring: 215 90% 55%;
+
+    --radius: 0.5rem;
+
+    /* Glass effect tokens */
+    --glass-bg: 0 0% 100% / 0.7;
+    --glass-border: 0 0% 100% / 0.5;
+    --glass-blur: 20px;
+
+    /* Syntax highlighting */
+    --syntax-string: 150 60% 40%;
+    --syntax-number: 30 90% 50%;
+    --syntax-boolean: 280 70% 55%;
+    --syntax-null: 0 70% 55%;
+    --syntax-key: 215 80% 50%;
+    --syntax-bracket: 220 15% 45%;
+  }
+
+  .dark {
+    --background: 225 25% 8%;
+    --foreground: 220 20% 95%;
+
+    --card: 225 25% 12%;
+    --card-foreground: 220 20% 95%;
+
+    --popover: 225 25% 12%;
+    --popover-foreground: 220 20% 95%;
+
+    --primary: 215 85% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 225 20% 18%;
+    --secondary-foreground: 220 20% 90%;
+
+    --muted: 225 20% 15%;
+    --muted-foreground: 220 15% 55%;
+
+    --accent: 215 85% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 225 20% 20%;
+    --input: 225 20% 18%;
+    --ring: 215 85% 60%;
+
+    /* Glass effect tokens - dark */
+    --glass-bg: 225 30% 15% / 0.6;
+    --glass-border: 225 20% 30% / 0.3;
+    --glass-blur: 24px;
+
+    /* Syntax highlighting - dark */
+    --syntax-string: 150 70% 55%;
+    --syntax-number: 35 95% 60%;
+    --syntax-boolean: 280 80% 70%;
+    --syntax-null: 0 80% 65%;
+    --syntax-key: 210 90% 70%;
+    --syntax-bracket: 220 20% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+@layer components {
+
+  /* Glass panel effect */
+  .glass-panel {
+    @apply relative overflow-hidden;
+    background: hsl(var(--glass-bg));
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid hsl(var(--glass-border));
+  }
+
+  .glass-panel::before {
+    content: '';
+    @apply absolute inset-0 pointer-events-none;
+    background: transparent;
+  }
+
+  /* Glass button */
+  .glass-button {
+    @apply relative px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200;
+    background: hsl(var(--glass-bg));
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--glass-border));
+  }
+
+  .glass-button:hover {
+    background: hsl(var(--primary) / 0.15);
+    border-color: hsl(var(--primary) / 0.3);
+  }
+
+  .glass-button:active {
+    transform: scale(0.98);
+  }
+
+  /* Tab styling */
+  .tab-item {
+    @apply relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .tab-item:hover {
+    color: hsl(var(--foreground));
+    background: hsl(var(--muted) / 0.5);
+  }
+
+  .tab-item.active {
+    color: hsl(var(--foreground));
+    background: hsl(var(--glass-bg));
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 8px hsl(0 0% 0% / 0.1);
+  }
+
+  /* Editor styling */
+  .json-editor {
+    @apply w-full h-full font-mono text-sm leading-relaxed resize-none outline-none;
+    background: transparent;
+    tab-size: 2;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .json-editor:focus {
+    outline: none;
+  }
+
+  .json-editor::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .json-editor::selection {
+    background: hsl(var(--primary) / 0.3);
+  }
+
+  /* Syntax colors */
+  .syntax-string {
+    color: hsl(var(--syntax-string));
+  }
+
+  .syntax-number {
+    color: hsl(var(--syntax-number));
+  }
+
+  .syntax-boolean {
+    color: hsl(var(--syntax-boolean));
+  }
+
+  .syntax-null {
+    color: hsl(var(--syntax-null));
+  }
+
+  .syntax-key {
+    color: hsl(var(--syntax-key));
+  }
+
+  .syntax-bracket {
+    color: hsl(var(--syntax-bracket));
+  }
+
+  /* Scrollbar styling */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+
+  /* Diff styling */
+  .diff-added {
+    background: hsl(150 60% 50% / 0.15);
+    border-left: 3px solid hsl(150 60% 50%);
+  }
+
+  .diff-removed {
+    background: hsl(0 70% 55% / 0.15);
+    border-left: 3px solid hsl(0 70% 55%);
+  }
+
+  .diff-changed {
+    background: hsl(35 90% 55% / 0.15);
+    border-left: 3px solid hsl(35 90% 55%);
+  }
+}
+
+@layer utilities {
+  .animate-in {
+    animation: animate-in 0.2s ease-out;
+  }
+
+  @keyframes animate-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .slide-in {
+    animation: slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+/* Monaco Editor Context Menu - Glassmorphism Style */
+
+/* Main context menu container */
+.monaco-menu {
+  background: transparent !important;
+}
+
+.context-view.monaco-menu-container {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* The actual menu with items */
+.monaco-menu .monaco-action-bar.vertical {
+  background: hsla(225, 25%, 12%, 0.92) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid hsla(215, 50%, 50%, 0.25) !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 8px 40px hsla(0, 0%, 0%, 0.5),
+    0 0 0 1px hsla(215, 50%, 60%, 0.15) inset,
+    0 1px 0 hsla(0, 0%, 100%, 0.05) inset !important;
+  padding: 6px !important;
+  overflow: hidden !important;
+}
+
+/* Menu items container */
+.monaco-menu .monaco-action-bar.vertical .actions-container {
+  padding: 0 !important;
+}
+
+/* Individual menu items */
+.monaco-menu .monaco-action-bar.vertical .action-item {
+  margin: 2px 0 !important;
+}
+
+.monaco-menu .monaco-action-bar.vertical .action-item .action-menu-item {
+  background: transparent !important;
+  border-radius: 8px !important;
+  padding: 0 6px !important;
+  transition: all 0.15s ease !important;
+}
+
+.monaco-menu .monaco-action-bar.vertical .action-item:hover .action-menu-item,
+.monaco-menu .monaco-action-bar.vertical .action-item.focused .action-menu-item {
+  background: hsla(215, 85%, 55%, 0.2) !important;
+}
+
+/* Menu item label */
+.monaco-menu .monaco-action-bar.vertical .action-label {
+  color: hsl(220, 20%, 88%) !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  padding: 6px 8px !important;
+}
+
+.monaco-menu .monaco-action-bar.vertical .action-item:hover .action-label,
+.monaco-menu .monaco-action-bar.vertical .action-item.focused .action-label {
+  color: hsl(215, 85%, 75%) !important;
+}
+
+/* Keyboard shortcuts */
+.monaco-menu .monaco-action-bar.vertical .keybinding {
+  color: hsla(220, 15%, 60%, 0.8) !important;
+  font-size: 12px !important;
+  padding-right: 4px !important;
+}
+
+/* Separator */
+.monaco-menu .monaco-action-bar.vertical .action-item.separator {
+  height: 1px !important;
+  background: hsla(215, 30%, 50%, 0.2) !important;
+  margin: 6px 10px !important;
+  padding: 0 !important;
+  min-height: 1px !important;
+}
+
+.monaco-menu .monaco-action-bar.vertical .action-item.separator .action-label {
+  display: none !important;
+}
+
+/* Submenu indicator */
+.monaco-menu .monaco-action-bar.vertical .submenu-indicator {
+  color: hsla(220, 15%, 60%, 0.8) !important;
+}
+
+/* Scrollbar in long menus */
+.monaco-menu .monaco-action-bar.vertical .monaco-scrollable-element>.scrollbar>.slider {
+  background: hsla(215, 50%, 60%, 0.3) !important;
+  border-radius: 4px !important;
+}
+
+/* Light mode overrides */
+:root:not(.dark) .monaco-menu .monaco-action-bar.vertical {
+  background: hsla(0, 0%, 100%, 0.92) !important;
+  border: 1px solid hsla(220, 20%, 85%, 0.8) !important;
+  box-shadow:
+    0 8px 40px hsla(0, 0%, 0%, 0.15),
+    0 0 0 1px hsla(0, 0%, 100%, 0.6) inset !important;
+}
+
+:root:not(.dark) .monaco-menu .monaco-action-bar.vertical .action-label {
+  color: hsl(220, 25%, 25%) !important;
+}
+
+:root:not(.dark) .monaco-menu .monaco-action-bar.vertical .action-item:hover .action-menu-item,
+:root:not(.dark) .monaco-menu .monaco-action-bar.vertical .action-item.focused .action-menu-item {
+  background: hsla(215, 90%, 55%, 0.12) !important;
+}
+
+:root:not(.dark) .monaco-menu .monaco-action-bar.vertical .action-item:hover .action-label,
+:root:not(.dark) .monaco-menu .monaco-action-bar.vertical .action-item.focused .action-label {
+  color: hsl(215, 90%, 45%) !important;
+}
+
+:root:not(.dark) .monaco-menu .monaco-action-bar.vertical .action-item.separator {
+  background: hsla(220, 15%, 80%, 0.6) !important;
+}
+
+:root:not(.dark) .monaco-menu .monaco-action-bar.vertical .keybinding {
+  color: hsl(220, 10%, 50%) !important;
+}
