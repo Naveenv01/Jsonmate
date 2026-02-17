@@ -112,29 +112,58 @@ export const JsonFormatter: React.FC = () => {
     }));
   }, [activeTabId, setTabs]);
 
+  const renumberTabs = useCallback((currentTabs: Tab[]) => {
+    let count = 1;
+    return currentTabs.map(tab => {
+      // Only rename if it follows the default naming pattern "Tab N"
+      if (/^Tab \d+$/.test(tab.name)) {
+        return { ...tab, name: `Tab ${count++}` };
+      }
+      return tab;
+    });
+  }, []);
+
   const handleTabAdd = useCallback(() => {
-    const newTab: Tab = {
-      id: generateId(),
-      name: `Tab ${tabs.length + 1}`,
-      content: '',
-      splitEnabled: false,
-      splitContent: '',
-    };
-    setTabs(prev => [...prev, newTab]);
-    setActiveTabId(newTab.id);
-  }, [tabs.length, setTabs, setActiveTabId]);
+    const newId = generateId();
+    setTabs(prev => {
+      const newTab: Tab = {
+        id: newId,
+        name: `Tab ${prev.length + 1}`, // Temporary name, will be renumbered if needed
+        content: '',
+        splitEnabled: false,
+        splitContent: '',
+      };
+      return renumberTabs([...prev, newTab]);
+    });
+    setActiveTabId(newId);
+  }, [setTabs, setActiveTabId, renumberTabs]);
 
   const handleTabClose = useCallback((id: string) => {
     setTabs(prev => {
+      // 1. Filter out the closed tab
       const filtered = prev.filter(t => t.id !== id);
-      if (filtered.length === 0) return [{ ...defaultTab, id: generateId() }];
-      if (activeTabId === id) {
-        const idx = prev.findIndex(t => t.id === id);
-        setActiveTabId((filtered[idx - 1] || filtered[0]).id);
+
+      // 2. Prevent empty state
+      if (filtered.length === 0) {
+        const newId = generateId();
+        const newTab = { ...defaultTab, id: newId, name: 'Tab 1' };
+        setActiveTabId(newId);
+        return [newTab];
       }
-      return filtered;
+
+      // 3. Update active tab if we closed the active one
+      if (activeTabId === id) {
+        const idx = prev.findIndex(t => t.id === id); // Original index
+        // Try to select the previous tab, or the first one if it was first
+        // If idx was 0, select new index 0. If idx > 0, select idx - 1.
+        const newActiveTab = filtered[idx - 1] || filtered[0];
+        setActiveTabId(newActiveTab.id);
+      }
+
+      // 4. Renumber remaining tabs
+      return renumberTabs(filtered);
     });
-  }, [activeTabId, setTabs, setActiveTabId]);
+  }, [activeTabId, setTabs, setActiveTabId, renumberTabs]);
 
   const handleTabRename = useCallback((id: string, name: string) => {
     setTabs(prev => prev.map(tab => tab.id === id ? { ...tab, name } : tab));
