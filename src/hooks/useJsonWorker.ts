@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { ValidationResult, JsonError, DiffResult } from '../utils/jsonUtils';
+import { ValidationResult, JsonError, DiffResult, validateJson, getJsonStats, compareJson, formatJson } from '../utils/jsonUtils';
 
 type WorkerMessage = 
   | { type: 'VALIDATE_RESULT'; payload: ValidationResult; id: string }
@@ -48,20 +48,40 @@ export function useJsonWorker() {
     });
   }, []);
 
-  const validate = useCallback((json: string): Promise<ValidationResult> => {
-    return postMessage('VALIDATE', json);
+  const validate = useCallback(async (json: string): Promise<ValidationResult> => {
+    try {
+      return await postMessage('VALIDATE', json);
+    } catch (error) {
+      console.warn('Worker failed for validate, using sync fallback:', error);
+      return validateJson(json);
+    }
   }, [postMessage]);
 
-  const getStats = useCallback((json: string): Promise<{ keys: number; depth: number; size: string }> => {
-    return postMessage('STATS', json);
+  const getStats = useCallback(async (json: string): Promise<{ keys: number; depth: number; size: string }> => {
+    try {
+      return await postMessage('STATS', json);
+    } catch (error) {
+      console.warn('Worker failed for getStats, using sync fallback:', error);
+      return getJsonStats(json);
+    }
   }, [postMessage]);
 
-  const compare = useCallback((left: string, right: string): Promise<DiffResult[]> => {
-    return postMessage('COMPARE', { left, right });
+  const compare = useCallback(async (left: string, right: string): Promise<DiffResult[]> => {
+    try {
+      return await postMessage('COMPARE', { left, right });
+    } catch (error) {
+      console.warn('Worker failed for compare, using sync fallback:', error);
+      return compareJson(left, right);
+    }
   }, [postMessage]);
 
-  const format = useCallback((json: string): Promise<string> => {
-    return postMessage('FORMAT', json);
+  const format = useCallback(async (json: string): Promise<string> => {
+    try {
+      return await postMessage('FORMAT', json);
+    } catch (error) {
+      console.warn('Worker failed for format, using sync fallback:', error);
+      return formatJson(json);
+    }
   }, [postMessage]);
 
   return { validate, getStats, compare, format };

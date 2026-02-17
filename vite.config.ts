@@ -12,6 +12,10 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [react()],
+  worker: {
+    format: 'es',
+    plugins: () => [react()],
+  },
   build: {
     rollupOptions: {
       output: {
