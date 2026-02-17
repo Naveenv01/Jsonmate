@@ -8,6 +8,7 @@ import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
 import Braces from 'lucide-react/dist/esm/icons/braces';
 import Columns2 from 'lucide-react/dist/esm/icons/columns-2';
 import Trash2 from 'lucide-react/dist/esm/icons/trash-2';
+import { ThemeToggle } from './ThemeToggle';
 
 interface ActionBarProps {
   onFormat: () => void;
@@ -88,6 +89,7 @@ const ActionBarComponent: React.FC<ActionBarProps> = ({
       </div>
 
       <div className="flex items-center gap-4 text-xs text-muted-foreground">
+        <ThemeToggle />
         <div className="flex items-center gap-1.5">
           {isValid ? (
             <Check className="w-3.5 h-3.5 text-syntax-string" />

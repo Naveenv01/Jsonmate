@@ -9,6 +9,7 @@ import { validateJson, getJsonStats, ValidationResult } from '../utils/jsonUtils
 import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
 import Loader2 from 'lucide-react/dist/esm/icons/loader-2';
 import { useJsonWorker } from '../hooks/useJsonWorker';
+import { useTheme } from '../hooks/useTheme';
 import type { MonacoJsonEditorRef } from './MonacoJsonEditor'; // Type only
 
 const MonacoJsonEditor = React.lazy(() => import('./MonacoJsonEditor').then(module => ({ default: module.MonacoJsonEditor })));
@@ -47,10 +48,8 @@ export const JsonFormatter: React.FC = () => {
   const [validation, setValidation] = React.useState<ValidationResult>({ valid: true, parsed: null });
   const [stats, setStats] = React.useState({ keys: 0, depth: 0, size: '0 B' });
 
-  // ... (useEffect for dark mode, activeTab memo, debounce useEffect remain same)
-  useEffect(() => {
-    document.documentElement.classList.add('dark');
-  }, []);
+  // Track theme
+  useTheme();
 
   const activeTab = useMemo(() =>
     tabs.find(t => t.id === activeTabId) || tabs[0] || defaultTab,

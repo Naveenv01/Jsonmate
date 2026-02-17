@@ -6,91 +6,94 @@
 
 @layer base {
   :root {
-    --background: 220 20% 97%;
-    --foreground: 220 25% 10%;
+    /* Light theme - Soft, pleasant, high contrast */
+    --background: 210 20% 98%;
+    --foreground: 215 25% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 25% 10%;
+    --card-foreground: 215 25% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 10%;
+    --popover-foreground: 215 25% 12%;
 
-    --primary: 215 90% 55%;
+    --primary: 217 91% 52%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 15% 92%;
-    --secondary-foreground: 220 25% 20%;
+    --secondary: 210 17% 94%;
+    --secondary-foreground: 215 22% 18%;
 
-    --muted: 220 15% 95%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 210 16% 96%;
+    --muted-foreground: 215 12% 42%;
 
-    --accent: 215 90% 55%;
+    --accent: 217 91% 52%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 88%;
-    --input: 220 15% 92%;
-    --ring: 215 90% 55%;
+    --border: 214 20% 89%;
+    --input: 214 20% 92%;
+    --ring: 217 91% 52%;
 
     --radius: 0.5rem;
 
-    /* Glass effect tokens */
-    --glass-bg: 0 0% 100% / 0.7;
-    --glass-border: 0 0% 100% / 0.5;
+    /* Glass effect tokens - softer, more subtle */
+    --glass-bg: 0 0% 100% / 0.85;
+    --glass-border: 214 30% 85% / 0.6;
     --glass-blur: 20px;
 
-    /* Syntax highlighting */
-    --syntax-string: 150 60% 40%;
-    --syntax-number: 30 90% 50%;
-    --syntax-boolean: 280 70% 55%;
-    --syntax-null: 0 70% 55%;
-    --syntax-key: 215 80% 50%;
-    --syntax-bracket: 220 15% 45%;
+    /* Syntax highlighting - vibrant but pleasant */
+    --syntax-string: 142 69% 38%;
+    --syntax-number: 25 85% 45%;
+    --syntax-boolean: 262 83% 58%;
+    --syntax-null: 0 72% 51%;
+    --syntax-key: 217 91% 45%;
+    --syntax-bracket: 215 18% 38%;
   }
 
   .dark {
-    --background: 225 25% 8%;
-    --foreground: 220 20% 95%;
+    /* Dark theme - Enhanced contrast, deeper colors */
+    --background: 222 28% 6%;
+    --foreground: 210 20% 98%;
 
-    --card: 225 25% 12%;
-    --card-foreground: 220 20% 95%;
+    --card: 222 25% 10%;
+    --card-foreground: 210 20% 98%;
 
-    --popover: 225 25% 12%;
-    --popover-foreground: 220 20% 95%;
+    --popover: 222 25% 10%;
+    --popover-foreground: 210 20% 98%;
 
-    --primary: 215 85% 60%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 225 20% 18%;
-    --secondary-foreground: 220 20% 90%;
+    --secondary: 222 20% 16%;
+    --secondary-foreground: 210 18% 92%;
 
-    --muted: 225 20% 15%;
-    --muted-foreground: 220 15% 55%;
+    --muted: 222 20% 13%;
+    --muted-foreground: 215 15% 70%;
+    /* Increased brightness for better readability */
 
-    --accent: 215 85% 60%;
+    --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 70% 55%;
+    --destructive: 0 72% 58%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 225 20% 20%;
-    --input: 225 20% 18%;
-    --ring: 215 85% 60%;
+    --border: 222 20% 18%;
+    --input: 222 20% 16%;
+    --ring: 217 91% 60%;
 
-    /* Glass effect tokens - dark */
-    --glass-bg: 225 30% 15% / 0.6;
-    --glass-border: 225 20% 30% / 0.3;
+    /* Glass effect tokens - enhanced depth */
+    --glass-bg: 222 30% 12% / 0.7;
+    --glass-border: 222 25% 25% / 0.4;
     --glass-blur: 24px;
 
-    /* Syntax highlighting - dark */
-    --syntax-string: 150 70% 55%;
-    --syntax-number: 35 95% 60%;
-    --syntax-boolean: 280 80% 70%;
-    --syntax-null: 0 80% 65%;
-    --syntax-key: 210 90% 70%;
-    --syntax-bracket: 220 20% 60%;
+    /* Syntax highlighting - brighter, better contrast */
+    --syntax-string: 142 76% 58%;
+    --syntax-number: 25 95% 65%;
+    --syntax-boolean: 262 83% 72%;
+    --syntax-null: 0 80% 68%;
+    --syntax-key: 217 91% 72%;
+    --syntax-bracket: 215 20% 65%;
   }
 }
 
@@ -174,6 +177,35 @@
     color: hsl(var(--muted-foreground));
   }
 
+  /* Remove default focus outline from Monaco editor */
+  .monaco-editor,
+  .monaco-editor .inputarea.ime-input,
+  .monaco-editor-background,
+  .monaco-editor .margin {
+    outline: none !important;
+  }
+
+  .monaco-editor:focus,
+  .monaco-editor:focus-within {
+    outline: none !important;
+    border: none !important;
+  }
+
+  /* Theme-aware current line highlighting */
+  .monaco-editor .view-overlays .current-line-exact {
+    border: none !important;
+  }
+
+  :root:not(.dark) .monaco-editor .view-overlays .current-line-exact {
+    border: none !important;
+    background: hsl(var(--muted) / 0.3) !important;
+  }
+
+  .dark .monaco-editor .view-overlays .current-line-exact {
+    border: none !important;
+    background: transparent !important;
+  }
+
   .json-editor::selection {
     background: hsl(var(--primary) / 0.3);
   }
@@ -236,6 +268,48 @@
   .diff-changed {
     background: hsl(35 90% 55% / 0.15);
     border-left: 3px solid hsl(35 90% 55%);
+  }
+
+  /* Dark theme UI contrast improvements */
+  .dark .glass-button {
+    border-color: hsl(var(--border)) !important;
+    background: hsl(var(--muted) / 0.3) !important;
+  }
+
+  .dark .glass-button:hover {
+    background: hsl(var(--muted) / 0.5) !important;
+    border-color: hsl(var(--primary) / 0.4) !important;
+  }
+
+  /* Make ActionBar border more visible in dark theme */
+  .dark .border-border\/50 {
+    border-color: hsl(var(--border)) !important;
+  }
+
+  /* Enhance TabBar container in dark theme */
+  .dark .bg-muted\/30 {
+    background: hsl(var(--muted) / 0.5) !important;
+    border-color: hsl(var(--border) / 0.8) !important;
+  }
+
+  /* Make separators more visible in dark theme */
+  .dark .bg-border {
+    background: hsl(var(--border)) !important;
+    opacity: 0.8 !important;
+  }
+
+  /* Improve text contrast in dark theme */
+  .dark .text-muted-foreground {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+
+  /* Use outline for selected tab in dark theme (doesn't affect layout) */
+  .dark .bg-background.shadow-sm.border.border-border {
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    outline: 1px solid hsl(215 15% 50%) !important;
+    outline-offset: -1px !important;
+    box-shadow: none !important;
   }
 }
 
